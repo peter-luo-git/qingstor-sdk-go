@@ -138,7 +138,8 @@ func (qb *Builder) parseRequestBody() error {
 	for i := 0; i < fields.NumField(); i++ {
 		location := fields.Type().Field(i).Tag.Get("location")
 		if location == "elements" {
-			name := fields.Type().Field(i).Tag.Get("name")
+			//name := fields.Type().Field(i).Tag.Get("name")
+			name := strings.Split(fields.Type().Field(i).Tag.Get("json"), ",")[0]
 			requestData[name] = fields.Field(i).Interface()
 		}
 	}
@@ -221,6 +222,9 @@ func (qb *Builder) parseRequestQueryAndHeaders() error {
 	for i := 0; i < fields.NumField(); i++ {
 		tagName := fields.Type().Field(i).Tag.Get("name")
 		tagLocation := fields.Type().Field(i).Tag.Get("location")
+		if tagLocation != "query" && tagLocation != "headers" {
+			continue
+		}
 		if tagDefault := fields.Type().Field(i).Tag.Get("default"); tagDefault != "" {
 			maps[tagLocation][tagName] = tagDefault
 		}
